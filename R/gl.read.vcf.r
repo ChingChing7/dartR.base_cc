@@ -55,7 +55,7 @@ gl.read.vcf <- function(vcffile,
   # re-write vcf2genlight from vcfR packages
   vcfR2genlight <- function(x, n.cores=1){
     
-    bi <- is.biallelic(x)
+    bi <- vcfR::is.biallelic(x)
     if(sum(!bi) > 0){
       msg <- paste("Found", sum(!bi), "loci with more than two alleles.")
       msg <- c(msg, "\n", paste("Objects of class genlight only support loci with two alleles."))
@@ -71,21 +71,14 @@ gl.read.vcf <- function(vcffile,
     ID    <- x@fix[,'ID']
     
     x <- extract.gt(x)
-    x[x=="0|0"] <- 0
-    x[x=="0|1"] <- 1
-    x[x=="1|0"] <- 1
-    x[x=="1|1"] <- 2
-    x[x=="0/0"] <- 0
-    x[x=="0/1"] <- 1
-    x[x=="1/0"] <- 1
-    x[x=="1/1"] <- 2
-    x[x=="0/0/0/0"] <- 0
-    x[x=="1/1/1/1"] <- 2
-    x[x=="0/0/0/1"] <- 1
-    x[x=="0/0/1/1"] <- 1
-    x[x=="0/1/1/1"] <- 1
-    
-    
+    x <- gsub("/", "", x)
+    x <- gsub("|", "", x, fixed = TRUE)
+    x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
+    x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
+    x[stringr::str_count(as.character(x),"0") != nchar(as.character(x)) &
+     stringr::str_count(as.character(x),"1") != nchar(as.character(x))
+      & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
+    x <- as.numeric(x)
     #  dim(x)
     if( requireNamespace('adegenet') ){
       x <- new('genlight', t(x), n.cores=n.cores)
