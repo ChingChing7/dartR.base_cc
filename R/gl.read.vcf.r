@@ -52,7 +52,56 @@ gl.read.vcf <- function(vcffile,
   chrom <- vcfR::getCHROM(vcf)
   pos <- vcfR::getPOS(vcf) 
   loc.all <- paste0(myRef,"/",myAlt)
-  x <- vcfR::vcfR2genlight(vcf)
+  # re-write vcf2genlight from vcfR packages
+  vcfR2genlight <- function(x, n.cores=1){
+    
+    bi <- is.biallelic(x)
+    if(sum(!bi) > 0){
+      msg <- paste("Found", sum(!bi), "loci with more than two alleles.")
+      msg <- c(msg, "\n", paste("Objects of class genlight only support loci with two alleles."))
+      msg <- c(msg, "\n", paste(sum(!bi), 'loci will be omitted from the genlight object.'))
+      warning(msg)
+      x <- x[bi,]
+    }
+    
+    x <- addID(x)
+    
+    CHROM <- x@fix[,'CHROM']
+    POS   <- x@fix[,'POS']
+    ID    <- x@fix[,'ID']
+    
+    x <- extract.gt(x)
+    x[x=="0|0"] <- 0
+    x[x=="0|1"] <- 1
+    x[x=="1|0"] <- 1
+    x[x=="1|1"] <- 2
+    x[x=="0/0"] <- 0
+    x[x=="0/1"] <- 1
+    x[x=="1/0"] <- 1
+    x[x=="1/1"] <- 2
+    x[x=="0/0/0/0"] <- 0
+    x[x=="1/1/1/1"] <- 2
+    x[x=="0/0/0/1"] <- 1
+    x[x=="0/0/1/1"] <- 1
+    x[x=="0/1/1/1"] <- 1
+    
+    
+    #  dim(x)
+    if( requireNamespace('adegenet') ){
+      x <- new('genlight', t(x), n.cores=n.cores)
+    } else {
+      warning("adegenet not installed")
+    }
+    #  x <- adegenet::as.genlight(t(x), n.cores=3)
+    #  x <- adegenet::as.genlight(t(x))
+    adegenet::chromosome(x) <- CHROM
+    adegenet::position(x)   <- POS
+    adegenet::locNames(x)   <- ID
+    
+    return(x)
+  }
+  ## re-write end
+  x <- vcfR2genlight(vcf)
   
   # adding SNP information from VCF
   info_tmp_1 <- vcf@fix[,6:7]
