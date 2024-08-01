@@ -75,9 +75,7 @@ gl.read.vcf <- function(vcffile,
     x <- gsub("|", "", x, fixed = TRUE)
     x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
     x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
-    x[stringr::str_count(as.character(x),"0") != nchar(as.character(x)) &
-     stringr::str_count(as.character(x),"1") != nchar(as.character(x))
-      & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
+    x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
     #  dim(x)
     if( requireNamespace('adegenet') ){
       x <- new('genlight', t(x), n.cores=n.cores)
