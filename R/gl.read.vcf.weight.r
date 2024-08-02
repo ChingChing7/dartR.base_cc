@@ -19,7 +19,7 @@
 #' @author Bernd Gruber (Post to \url{https://groups.google.com/d/forum/dartr})
 #' @examples
 #' \dontrun{
-#' obj <- gl.read.vcf(system.file('extdata/test.vcf', package='dartR'))
+#' obj <- gl.read.vcf.weight(system.file('extdata/test.vcf', package='dartR'))
 #' }
 
 gl.read.vcf.weight <- function(vcffile,
