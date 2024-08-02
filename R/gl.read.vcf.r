@@ -73,9 +73,18 @@ gl.read.vcf <- function(vcffile,
     x <- extract.gt(x)
     x <- gsub("/", "", x)
     x <- gsub("|", "", x, fixed = TRUE)
-    x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
-    x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
-    x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
+    #x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
+    #x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
+    #x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
+    # allow different codes other than 0,1,2,NA
+    x[nchar(as.character(x))<=2 & stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
+    x[nchar(as.character(x))<=2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
+    x[nchar(as.character(x))<=2 & nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
+    ##
+    x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
+    x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- max.ploidy
+    x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)] <-
+      stringr::str_count(as.character(x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)]),"1")
     #  dim(x)
     if( requireNamespace('adegenet') ){
       x <- new('genlight', t(x), n.cores=n.cores)
