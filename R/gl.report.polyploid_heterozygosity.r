@@ -275,6 +275,7 @@
 #'    
 #' @author Custodian: Luis Mijangos (Post to
 #' \url{https://groups.google.com/d/forum/dartr})
+#' 
 #'
 #' @references
 #' \itemize{
@@ -440,7 +441,7 @@ gl.report.polyploid_heterozygosity <- function(x,
     gamete_het <- function(x){
       ploidy <- t(t(unname(ploidy(x))))
       ploidy_matrix <- matrix(rep(choose(ploidy, 2), nLoc(x)), nrow=nInd(x), ncol=nLoc(x))
-      homo_count <- p[,1]-as.matrix(x)
+      homo_count <- ploidy[,1]-as.matrix(x)
       gamete_het <- (homo_count*as.matrix(x))/ploidy_matrix
       return(gamete_het)}
     
