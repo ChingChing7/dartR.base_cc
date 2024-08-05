@@ -82,14 +82,17 @@ gl.read.vcf <- function(vcffile,
     x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
     } else if (mode2=="polyploid") {
      #allow different codes other than 0,1,2,NA
-    x[nchar(as.character(x))<=2 & stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
-    x[nchar(as.character(x))<=2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
-    x[nchar(as.character(x))<=2 & nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
-    ##
-    x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
-    x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- nchar(as.character(x))
-    x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)] <-
-      stringr::str_count(as.character(x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)]),"1")}
+      # all 0
+      x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
+      # all 1
+      x[which(stringr::str_count(as.character(x),"1") == nchar(as.character(x)))] <- 
+        nchar(x[which(stringr::str_count(as.character(x),"1") == nchar(as.character(x)))])
+      # heterozygous
+      x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1 &
+                stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)] <-
+        stringr::str_count(x[which(nchar(as.character(x)) != 1 & 
+                                     stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1 &
+                                     stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)],"1")}
     #  dim(x)
     if( requireNamespace('adegenet') ){
       x <- new('genlight', t(x), n.cores=n.cores)
