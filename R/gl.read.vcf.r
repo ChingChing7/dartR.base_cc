@@ -66,13 +66,13 @@ gl.read.vcf <- function(vcffile,
       x <- x[bi,]
     }
     
-    x <- addID(x)
+    x <- vcfR::addID(x)
     
     CHROM <- x@fix[,'CHROM']
     POS   <- x@fix[,'POS']
     ID    <- x@fix[,'ID']
     
-    x <- extract.gt(x)
+    x <- vcfR::extract.gt(x)
     x <- gsub("/", "", x)
     x <- gsub("|", "", x, fixed = TRUE)
     # compress all polyploid heterozygous sites to 1
