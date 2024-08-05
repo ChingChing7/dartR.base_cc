@@ -513,7 +513,7 @@ gl.report.polyploid_heterozygosity <- function(x,
     Ho.adjSD <-
       sqrt((
         mapply(function(x, Mean)
-          sum((x - Mean) ^ 2, na.rm = TRUE), Ho.loc, Mean = Ho.adj) +
+          sum((x - Mean) ^ 2, na.rm = TRUE), Ho.loc.gamete, Mean = Ho.adj) +
           n.invariant * Ho.adj ^
           2
       ) / (n_loc +
@@ -582,7 +582,7 @@ gl.report.polyploid_heterozygosity <- function(x,
                (n_loc[i] + n.invariant - 1))
       Hexp.adjSE[i] <- Hexp.adjSD[i] / sqrt(poly_loc[i]+mono_loc[i])
     
-      FIS_temp <- (uH - Ho.loc[[i]]) /  uH 
+      FIS_temp <- (uH - Ho.loc.gamete[[i]]) /  uH 
       Fis_df[[i]] <- FIS_temp
       FIS[i] <- mean(FIS_temp, na.rm = TRUE)
       FISSD[i] <- sd(FIS_temp, na.rm = TRUE)
