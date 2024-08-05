@@ -57,7 +57,7 @@ gl.read.vcf <- function(vcffile,
   pos <- vcfR::getPOS(vcf) 
   loc.all <- paste0(myRef,"/",myAlt)
   # re-write vcf2genlight from vcfR packages
-  vcfR2genlight <- function(x, n.cores=1,mode=mode){
+  vcfR2genlight <- function(x, n.cores=1){
     bi <- vcfR::is.biallelic(x)
     if(sum(!bi) > 0){
       msg <- paste("Found", sum(!bi), "loci with more than two alleles.")
