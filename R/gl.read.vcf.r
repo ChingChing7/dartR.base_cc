@@ -24,7 +24,7 @@
 
 gl.read.vcf <- function(vcffile,
                         ind.metafile = NULL,
-                        verbose = NULL) {
+                        verbose = NULL, mode=NULL) {
   # SET VERBOSITY
   verbose <- gl.check.verbosity(verbose)
   
@@ -45,7 +45,11 @@ gl.read.vcf <- function(vcffile,
     ))
     return(-1)
   } 
-  
+
+  if(is.null(mode)){
+      cat(warn("  Please choose 'compressed' or 'polyploid' mode \n"))
+    }
+
   vcf <- vcfR::read.vcfR(file = vcffile, verbose = verbose)
   myRef <- vcfR::getREF(vcf)
   myAlt <- vcfR::getALT(vcf)
@@ -53,8 +57,7 @@ gl.read.vcf <- function(vcffile,
   pos <- vcfR::getPOS(vcf) 
   loc.all <- paste0(myRef,"/",myAlt)
   # re-write vcf2genlight from vcfR packages
-  vcfR2genlight <- function(x, n.cores=1){
-    
+  vcfR2genlight <- function(x, n.cores=1,mode=mode){
     bi <- vcfR::is.biallelic(x)
     if(sum(!bi) > 0){
       msg <- paste("Found", sum(!bi), "loci with more than two alleles.")
@@ -73,10 +76,13 @@ gl.read.vcf <- function(vcffile,
     x <- extract.gt(x)
     x <- gsub("/", "", x)
     x <- gsub("|", "", x, fixed = TRUE)
-    #x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
-    #x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
-    #x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
-    # allow different codes other than 0,1,2,NA
+    # compress all polyploid heterozygous sites to 1
+    if (mode=="compressed"){
+    x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
+    x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
+    x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
+    } else if (mode=="polyploid") {
+     #allow different codes other than 0,1,2,NA
     x[nchar(as.character(x))<=2 & stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
     x[nchar(as.character(x))<=2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
     x[nchar(as.character(x))<=2 & nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
@@ -84,7 +90,7 @@ gl.read.vcf <- function(vcffile,
     x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
     x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- max.ploidy
     x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)] <-
-      stringr::str_count(as.character(x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)]),"1")
+      stringr::str_count(as.character(x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)]),"1")}
     #  dim(x)
     if( requireNamespace('adegenet') ){
       x <- new('genlight', t(x), n.cores=n.cores)
@@ -152,7 +158,8 @@ gl.read.vcf <- function(vcffile,
     }
   }
   
-  ploidy(x) <- 2
+#  allow varied ploidy level
+  ploidy(x) <- ploidy(x)
   x <- gl.compliance.check(x)
   
   x$other$loc.metrics <- cbind(x$other$loc.metrics,info)
