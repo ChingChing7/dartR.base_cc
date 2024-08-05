@@ -87,7 +87,7 @@ gl.read.vcf <- function(vcffile,
     x[nchar(as.character(x))<=2 & nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
     ##
     x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
-    x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- max.ploidy
+    x[nchar(as.character(x))>2 & stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- nchar(as.character(x))
     x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)] <-
       stringr::str_count(as.character(x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1)]),"1")}
     #  dim(x)
