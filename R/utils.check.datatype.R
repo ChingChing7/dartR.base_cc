@@ -71,6 +71,11 @@ utils.check.datatype <- function(x,
                 cat(report(" with SNP data\n"))
             }
             datatype <- "SNP"
+        } else if (is.null(ploidy(x))==F) {
+          if (verbose >= 2) {
+            cat(report(" with SNP data\n"))
+          }
+            datatype <- "SNP"
         } else {
             stop(
                 error(
