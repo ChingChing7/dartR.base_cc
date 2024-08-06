@@ -27,6 +27,7 @@ gl.read.vcf <- function(vcffile,
                         verbose = NULL, mode=NULL) {
   if(mode!="compressed" | mode!="polyploid"){
     cat(error("  Please choose 'compressed' or 'polyploid' mode \n"))
+    return(-1)
   }
   # SET VERBOSITY
   verbose <- gl.check.verbosity(verbose)
