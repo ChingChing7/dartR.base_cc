@@ -7,6 +7,8 @@
 #' @param verbose Verbosity: 0, silent or fatal errors; 1, begin and end; 2,
 #' progress log; 3, progress and results summary; 5, full report
 #' [default 2, unless specified using gl.set.verbosity].
+#' @param mode compressed: all heterozygous sites will be coded as 1 regardless ploidy level, 
+#' polyploid: sites will be codes as copy number of alternate allele [required].
 #' @details
 #' The ind.metadata file needs to have very specific headings. First a heading
 #' called id. Here the ids have to match the ids in the dartR object. 
@@ -16,7 +18,7 @@
 #' columns with individual metadata can be imported (e.g. age, gender).
 #' @return A genlight object.
 #' @export
-#' @author Bernd Gruber (Post to \url{https://groups.google.com/d/forum/dartr})
+#' @author Bernd Gruber (Post to \url{https://groups.google.com/d/forum/dartr}) 
 #' @examples
 #' \dontrun{
 #' obj <- gl.read.vcf(system.file('extdata/test.vcf', package='dartR'))
