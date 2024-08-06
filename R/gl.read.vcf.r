@@ -25,10 +25,6 @@
 gl.read.vcf <- function(vcffile,
                         ind.metafile = NULL,
                         verbose = NULL, mode=NULL) {
-  if(!mode %in% c("compressed","polyploid")){
-    cat(error("  Please choose 'compressed' or 'polyploid' mode \n"))
-    stop()
-  }
   # SET VERBOSITY
   verbose <- gl.check.verbosity(verbose)
   
@@ -93,7 +89,11 @@ gl.read.vcf <- function(vcffile,
                 stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)] <-
         stringr::str_count(x[which(nchar(as.character(x)) != 1 & 
                                      stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1 &
-                                     stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)],"1")}
+                                     stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)],"1")
+   } else {
+        cat(error("  Please choose 'compressed' or 'polyploid' mode \n"))
+        stop()
+    }
     #  dim(x)
     if( requireNamespace('adegenet') ){
       x <- new('genlight', t(x), n.cores=n.cores)
