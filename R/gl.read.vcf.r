@@ -25,7 +25,7 @@
 gl.read.vcf <- function(vcffile,
                         ind.metafile = NULL,
                         verbose = NULL, mode=NULL) {
-  if(mode!="compressed" | mode!="polyploid"){
+  if(!mode %in% c("compressed","polyploid")){
     cat(error("  Please choose 'compressed' or 'polyploid' mode \n"))
     stop()
   }
