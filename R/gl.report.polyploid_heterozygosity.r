@@ -437,7 +437,7 @@ gl.report.polyploid_heterozygosity <- function(x,
     
     # Calculate heterozygosity for each population in the list
     # CP = Carlo Pacioni CP ###
-    # function to calculate gamete heterozygosity
+    # function to calculate gametic heterozygosity
     gamete_het <- function(x){
       ploidy <- t(t(unname(ploidy(x))))
       ploidy_matrix <- matrix(rep(choose(ploidy, 2), nLoc(x)), nrow=nInd(x), ncol=nLoc(x))
