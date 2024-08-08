@@ -7,8 +7,8 @@
 #' @param verbose Verbosity: 0, silent or fatal errors; 1, begin and end; 2,
 #' progress log; 3, progress and results summary; 5, full report
 #' [default 2, unless specified using gl.set.verbosity].
-#' @param mode compressed: all heterozygous sites will be coded as 1 regardless ploidy level, 
-#' polyploid: sites will be codes as copy number of alternate allele [required].
+#' @param mode genotype: all heterozygous sites will be coded as 1 regardless ploidy level, 
+#' dosage: sites will be codes as copy number of alternate allele [required].
 #' @details
 #' The ind.metadata file needs to have very specific headings. First a heading
 #' called id. Here the ids have to match the ids in the dartR object. 
@@ -74,12 +74,12 @@ gl.read.vcf <- function(vcffile,
     x <- vcfR::extract.gt(x)
     x <- gsub("/", "", x)
     x <- gsub("|", "", x, fixed = TRUE)
-    # compress all polyploid heterozygous sites to 1
-    if (mode2=="compressed"){
+    # code all polyploid heterozygous sites to 1
+    if (mode2=="genotype"){
     x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
     x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
     x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
-    } else if (mode2=="polyploid") {
+    } else if (mode2=="dosage") {
      #allow different codes other than 0,1,2,NA
       # all 0
       x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
@@ -93,7 +93,7 @@ gl.read.vcf <- function(vcffile,
                                      stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1 &
                                      stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)],"1")
    } else {
-        cat(error("  Please choose 'compressed' or 'polyploid' mode \n"))
+        cat(error("  Please choose 'genotype' or 'dosage' mode \n"))
         stop()
     }
     #  dim(x)
