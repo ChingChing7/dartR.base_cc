@@ -186,7 +186,6 @@
 #'   - To see how well a sample mean might estimate a population mean, consider 
 #'   the standard error.
 #'   
-#'   In practice, geneticists often use a combination of these methods to 
 #'   analyze and present their data, depending on their research questions and 
 #'   the nature of the data.
 #'   
@@ -273,16 +272,14 @@
 #'     amount of processing time, therefore parallelisation in Windows machines
 #'    is only quicker than not using parallelisation when nboots > 1000-2000.
 #'    
-#' @author Custodian: Luis Mijangos (Post to
+#' @author Custodian: Ching Ching Lau (Post to
 #' \url{https://groups.google.com/d/forum/dartr})
 #' 
 #'
 #' @references
 #' \itemize{
-#' \item Mráz, P., Gaudeul, M., Rioux, D., Gielly, L., Choler, P., Taberlet, P., & 
-#' IntraBioDiv Consortium. (2007). Genetic structure of Hypochaeris uniflora (Asteraceae) 
-#' suggests vicariance in the Carpathians and rapid post‐glacial colonization of the Alps from an eastern Alpine refugium. 
-#' Journal of Biogeography, 34(12), 2100-2114.
+#' \item Moody, M. E., Mueller, L. D., & Soltis, D. E. (1993). 
+#' Genetic variation and random drift in autotetraploid populations. Genetics, 134(2), 649-657.
 #'   }
 #'
 #' @examples
