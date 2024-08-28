@@ -58,7 +58,7 @@ gl.read.vcf <- function(vcffile,
   pos <- vcfR::getPOS(vcf) 
   loc.all <- paste0(myRef,"/",myAlt)
   
-  x <- utils.vcf2genlight.polyploid(vcf)
+  x <- utils.vcfr2genlight.polyploid(vcf)
   
   # adding SNP information from VCF
   info_tmp_1 <- vcf@fix[,6:7]
