@@ -19,7 +19,7 @@
 #' \url{https://groups.google.com/d/forum/dartr}
 
 #' @examples
-#' datatype <- utils.vcfr2genlight.polyploid(vcfr, mode2="genotype")
+#' datatype <- utils.vcfr2genlight.polyploid(x=vcfr, mode2="genotype")
 #' @export
 #' @references
 #' \itemize{
