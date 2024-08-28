@@ -16,9 +16,12 @@
 #' pop: specifies the population membership of each individual. lat and lon
 #' specify spatial coordinates (in decimal degrees WGS1984 format). Additional
 #' columns with individual metadata can be imported (e.g. age, gender).
+#' Note also that this function checks to see if there are input of mode, missing input of mode 
+#' will issued the user with a error. "Dosage" mode of this function assign ploidy levels as maximum copy number of alternate alleles. 
+#' Please carefully check the data if "dosage" mode is used.
 #' @return A genlight object.
 #' @export
-#' @author Bernd Gruber (Post to \url{https://groups.google.com/d/forum/dartr}) 
+#' @author Bernd Gruber (with polyploid conversion from Ching Ching Lau) (Post to \url{https://groups.google.com/d/forum/dartr}) 
 #' @examples
 #' \dontrun{
 #' obj <- gl.read.vcf(system.file('extdata/test.vcf', package='dartR'))
@@ -54,64 +57,8 @@ gl.read.vcf <- function(vcffile,
   chrom <- vcfR::getCHROM(vcf)
   pos <- vcfR::getPOS(vcf) 
   loc.all <- paste0(myRef,"/",myAlt)
-  # re-write vcf2genlight from vcfR packages
-  vcfR2genlight <- function(x, n.cores=1, mode2=mode){
-    bi <- vcfR::is.biallelic(x)
-    if(sum(!bi) > 0){
-      msg <- paste("Found", sum(!bi), "loci with more than two alleles.")
-      msg <- c(msg, "\n", paste("Objects of class genlight only support loci with two alleles."))
-      msg <- c(msg, "\n", paste(sum(!bi), 'loci will be omitted from the genlight object.'))
-      warning(msg)
-      x <- x[bi,]
-    }
-    
-    x <- vcfR::addID(x)
-    
-    CHROM <- x@fix[,'CHROM']
-    POS   <- x@fix[,'POS']
-    ID    <- x@fix[,'ID']
-    
-    x <- vcfR::extract.gt(x)
-    x <- gsub("/", "", x)
-    x <- gsub("|", "", x, fixed = TRUE)
-    # code all polyploid heterozygous sites to 1
-    if (mode2=="genotype"){
-    x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
-    x[stringr::str_count(as.character(x),"1") == nchar(as.character(x))] <- 2
-    x[nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1] <- 1
-    } else if (mode2=="dosage") {
-     #allow different codes other than 0,1,2,NA
-      # all 0
-      x[stringr::str_count(as.character(x),"0") == nchar(as.character(x))] <- 0
-      # all 1
-      x[which(stringr::str_count(as.character(x),"1") == nchar(as.character(x)))] <- 
-        nchar(x[which(stringr::str_count(as.character(x),"1") == nchar(as.character(x)))])
-      # heterozygous
-      x[which(nchar(as.character(x)) != 1 & stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1 &
-                stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)] <-
-        stringr::str_count(x[which(nchar(as.character(x)) != 1 & 
-                                     stringr::str_count(as.character(x),"1")/nchar(as.character(x)) < 1 &
-                                     stringr::str_count(as.character(x),"1")/nchar(as.character(x)) > 0)],"1")
-   } else {
-        cat(error("  Please choose 'genotype' or 'dosage' mode \n"))
-        stop()
-    }
-    #  dim(x)
-    if( requireNamespace('adegenet') ){
-      x <- new('genlight', t(x), n.cores=n.cores)
-    } else {
-      warning("adegenet not installed")
-    }
-    #  x <- adegenet::as.genlight(t(x), n.cores=3)
-    #  x <- adegenet::as.genlight(t(x))
-    adegenet::chromosome(x) <- CHROM
-    adegenet::position(x)   <- POS
-    adegenet::locNames(x)   <- ID
-    
-    return(x)
-  }
-  ## re-write end
-  x <- vcfR2genlight(vcf)
+  
+  x <- utils.vcf2genlight.polyploid(vcf)
   
   # adding SNP information from VCF
   info_tmp_1 <- vcf@fix[,6:7]
